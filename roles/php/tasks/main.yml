@@ -1,3 +1,13 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for roles/php
+- name: Installer PHP et ses extensions sur Ubuntu
+  apt:
+    name: "{{ php_packages_ubuntu }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Installer PHP et ses extensions sur Rocky Linux
+  dnf:
+    name: "{{ php_packages_rocky }}"
+    state: present
+  when: ansible_os_family == "RedHat"

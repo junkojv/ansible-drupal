@@ -1,3 +1,18 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# defaults file for roles/php
+php_packages_ubuntu:
+  - php
+  - php-mysql
+  - php-xml
+  - php-gd
+  - php-curl
+  - php-mbstring
+  - php-zip
+
+php_packages_rocky:
+  - php
+  - php-mysqlnd
+  - php-xml
+  - php-gd
+  - php-curl
+  - php-mbstring
+  - php-zip
