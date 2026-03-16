@@ -1,3 +1,71 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for roles/drupal
+- name: Installer wget et tar sur Ubuntu
+  apt:
+    name:
+      - wget
+      - tar
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Installer wget et tar sur Rocky Linux
+  dnf:
+    name:
+      - wget
+      - tar
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Télécharger Drupal
+  get_url:
+    url: "{{ drupal_download_url }}"
+    dest: /tmp/drupal-{{ drupal_version }}.tar.gz
+    mode: "0644"
+
+- name: Extraire Drupal dans /tmp
+  unarchive:
+    src: /tmp/drupal-{{ drupal_version }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+    creates: /tmp/drupal-{{ drupal_version }}/index.php
+
+- name: Créer le dossier d'installation
+  file:
+    path: "{{ drupal_install_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Copier Drupal vers le dossier d'installation
+  command: cp -r /tmp/drupal-{{ drupal_version }}/. {{ drupal_install_dir }}/
+  args:
+    creates: "{{ drupal_install_dir }}/index.php"
+
+- name: Créer le dossier sites/default/files
+  file:
+    path: "{{ drupal_install_dir }}/sites/default/files"
+    state: directory
+    mode: "0755"
+
+- name: Copier le fichier de configuration par défaut
+  copy:
+    src: "{{ drupal_install_dir }}/sites/default/default.settings.php"
+    dest: "{{ drupal_install_dir }}/sites/default/settings.php"
+    remote_src: yes
+    force: no
+    mode: "0644"
+
+- name: Donner les bonnes permissions sur Ubuntu
+  file:
+    path: "{{ drupal_install_dir }}"
+    owner: www-data
+    group: www-data
+    recurse: yes
+  when: ansible_os_family == "Debian"
+
+- name: Donner les bonnes permissions sur Rocky Linux
+  file:
+    path: "{{ drupal_install_dir }}"
+    owner: apache
+    group: apache
+    recurse: yes
+  when: ansible_os_family == "RedHat"

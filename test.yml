@@ -6,3 +6,4 @@
     - role: roles/apache
     - role: roles/mariadb
     - role: roles/php
+    - role: roles/drupal
