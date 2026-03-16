@@ -1,0 +1,5 @@
+---
+apache_package_ubuntu: apache2
+apache_package_rocky: httpd
+apache_service_ubuntu: apache2
+apache_service_rocky: httpd

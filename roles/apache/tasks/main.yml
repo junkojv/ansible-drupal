@@ -1,0 +1,31 @@
+---
+- name: Installer Apache sur Ubuntu
+  apt:
+    name: "{{ apache_package_ubuntu }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Installer Apache sur Rocky Linux
+  dnf:
+    name: "{{ apache_package_rocky }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Démarrer et activer Apache sur Ubuntu
+  service:
+    name: "{{ apache_service_ubuntu }}"
+    state: started
+    enabled: yes
+  when: ansible_os_family == "Debian"
+
+- name: Vérifier si Apache tourne sur Rocky Linux
+  shell: cat /proc/*/comm 2>/dev/null | grep -q httpd
+  register: httpd_running
+  ignore_errors: true
+  changed_when: false
+  when: ansible_os_family == "RedHat"
+
+- name: Démarrer Apache sur Rocky Linux
+  command: /usr/sbin/httpd
+  when: ansible_os_family == "RedHat" and httpd_running.rc != 0

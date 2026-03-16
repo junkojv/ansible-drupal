@@ -1,0 +1,7 @@
+---
+- name: Test rôle Apache
+  hosts: all
+  become: yes
+  roles:
+    - role: roles/apache
+    - role: roles/mariadb

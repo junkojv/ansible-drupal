@@ -1,0 +1,89 @@
+---
+- name: Installer MariaDB sur Ubuntu
+  apt:
+    name: "{{ mariadb_package_ubuntu }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Installer MariaDB sur Rocky Linux
+  dnf:
+    name: "{{ mariadb_package_rocky }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Installer PyMySQL sur Ubuntu
+  apt:
+    name: python3-pymysql
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Installer PyMySQL sur Rocky Linux
+  dnf:
+    name: python3-PyMySQL
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Vérifier si MariaDB tourne
+  shell: cat /proc/*/comm 2>/dev/null | grep -q mariadbd
+  register: mariadb_running
+  ignore_errors: true
+  changed_when: false
+
+- name: Démarrer MariaDB sur Ubuntu
+  command: service mariadb start
+  when: ansible_os_family == "Debian" and mariadb_running.rc != 0
+
+- name: Initialiser MariaDB sur Rocky Linux
+  command: mysql_install_db --user=mysql --datadir=/var/lib/mysql
+  args:
+    creates: /var/lib/mysql/mysql
+  when: ansible_os_family == "RedHat"
+
+- name: Démarrer MariaDB sur Rocky Linux
+  shell: mysqld_safe --datadir=/var/lib/mysql --pid-file=/var/run/mariadb/mariadb.pid &
+  when: ansible_os_family == "RedHat" and mariadb_running.rc != 0
+
+- name: Attendre que MariaDB soit prêt sur Ubuntu
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    timeout: 30
+  when: ansible_os_family == "Debian"
+
+- name: Attendre que MariaDB soit prêt sur Rocky Linux
+  wait_for:
+    path: /var/lib/mysql/mysql.sock
+    timeout: 30
+  when: ansible_os_family == "RedHat"
+
+- name: Créer la base de données Drupal sur Ubuntu
+  mysql_db:
+    name: "{{ drupal_db_name }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: ansible_os_family == "Debian"
+
+- name: Créer la base de données Drupal sur Rocky Linux
+  mysql_db:
+    name: "{{ drupal_db_name }}"
+    state: present
+    login_unix_socket: /var/lib/mysql/mysql.sock
+  when: ansible_os_family == "RedHat"
+
+- name: Créer l'utilisateur Drupal sur Ubuntu
+  mysql_user:
+    name: "{{ drupal_db_user }}"
+    password: "{{ drupal_db_password }}"
+    priv: "{{ drupal_db_name }}.*:ALL"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: ansible_os_family == "Debian"
+
+- name: Créer l'utilisateur Drupal sur Rocky Linux
+  mysql_user:
+    name: "{{ drupal_db_user }}"
+    password: "{{ drupal_db_password }}"
+    priv: "{{ drupal_db_name }}.*:ALL"
+    state: present
+    login_unix_socket: /var/lib/mysql/mysql.sock
+  when: ansible_os_family == "RedHat"

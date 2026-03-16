@@ -1,0 +1,9 @@
+---
+mariadb_package_ubuntu: mariadb-server
+mariadb_package_rocky: mariadb-server
+mariadb_service_ubuntu: mariadb
+mariadb_service_rocky: mariadb
+
+drupal_db_name: drupal
+drupal_db_user: drupal
+drupal_db_password: drupal123
