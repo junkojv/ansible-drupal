@@ -29,3 +29,19 @@
 - name: Démarrer Apache sur Rocky Linux
   command: /usr/sbin/httpd
   when: ansible_os_family == "RedHat" and httpd_running.rc != 0
+
+- name: Déployer le virtualhost Drupal sur Ubuntu
+  template:
+    src: drupal.conf.j2
+    dest: /etc/apache2/sites-enabled/drupal.conf
+    mode: "0644"
+  when: ansible_os_family == "Debian"
+  notify: Redémarrer Apache sur Ubuntu
+
+- name: Déployer le virtualhost Drupal sur Rocky Linux
+  template:
+    src: drupal.conf.j2
+    dest: /etc/httpd/conf.d/drupal.conf
+    mode: "0644"
+  when: ansible_os_family == "RedHat"
+  notify: Redémarrer Apache sur Rocky Linux
