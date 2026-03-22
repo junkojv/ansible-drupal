@@ -7,6 +7,6 @@
         Require all granted
     </Directory>
 
-    ErrorLog /var/log/apache2/drupal_error.log
-    CustomLog /var/log/apache2/drupal_access.log combined
+    ErrorLog {{ apache_log_dir_ubuntu if ansible_os_family == "Debian" else apache_log_dir_rocky }}/drupal_error.log
+    CustomLog {{ apache_log_dir_ubuntu if ansible_os_family == "Debian" else apache_log_dir_rocky }}/drupal_access.log combined
 </VirtualHost>
