@@ -35,6 +35,24 @@
     state: directory
     mode: "0755"
 
+- name: Vérifier la version Drupal installée
+  shell: cat {{ drupal_install_dir }}/.drupal_version_installed
+  register: installed_drupal_version
+  changed_when: false
+  failed_when: false
+
+- name: Supprimer l'ancienne installation Drupal si la version a changé
+  file:
+    path: "{{ drupal_install_dir }}"
+    state: absent
+  when: installed_drupal_version.stdout != drupal_version
+
+- name: Recréer le dossier d'installation Drupal
+  file:
+    path: "{{ drupal_install_dir }}"
+    state: directory
+    mode: "0755"
+
 - name: Copier Drupal vers le dossier d'installation
   command: cp -r /tmp/drupal-{{ drupal_version }}/. {{ drupal_install_dir }}/
   args:
@@ -46,12 +64,16 @@
     state: directory
     mode: "0755"
 
-- name: Copier le fichier de configuration par défaut
-  copy:
-    src: "{{ drupal_install_dir }}/sites/default/default.settings.php"
+- name: Créer le dossier config_sync
+  file:
+    path: "{{ drupal_install_dir }}/sites/default/files/config_sync"
+    state: directory
+    mode: "0755"
+
+- name: Déployer le fichier settings.php
+  template:
+    src: settings.php.j2
     dest: "{{ drupal_install_dir }}/sites/default/settings.php"
-    remote_src: yes
-    force: no
     mode: "0644"
 
 - name: Donner les bonnes permissions sur Ubuntu
@@ -69,3 +91,9 @@
     group: apache
     recurse: yes
   when: ansible_os_family == "RedHat"
+
+- name: Enregistrer la version Drupal installée
+  copy:
+    dest: "{{ drupal_install_dir }}/.drupal_version_installed"
+    content: "{{ drupal_version }}\n"
+    mode: "0644"

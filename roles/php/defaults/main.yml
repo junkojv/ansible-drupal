@@ -10,6 +10,7 @@ php_packages_ubuntu:
 
 php_packages_rocky:
   - php
+  - php-fpm
   - php-mysqlnd
   - php-xml
   - php-gd

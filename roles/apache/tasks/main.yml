@@ -30,6 +30,13 @@
   command: /usr/sbin/httpd
   when: ansible_os_family == "RedHat" and httpd_running.rc != 0
 
+- name: Désactiver la page par défaut Apache sur Rocky Linux
+  file:
+    path: /etc/httpd/conf.d/welcome.conf
+    state: absent
+  when: ansible_os_family == "RedHat"
+  notify: Redémarrer Apache sur Rocky Linux
+
 - name: Déployer le virtualhost Drupal sur Ubuntu
   template:
     src: drupal.conf.j2

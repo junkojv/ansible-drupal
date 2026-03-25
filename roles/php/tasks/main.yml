@@ -11,3 +11,23 @@
     name: "{{ php_packages_rocky }}"
     state: present
   when: ansible_os_family == "RedHat"
+
+- name: Vérifier si php-fpm tourne sur Rocky Linux
+  shell: cat /proc/*/comm 2>/dev/null | grep -q php-fpm
+  register: php_fpm_running
+  changed_when: false
+  failed_when: false
+  when: ansible_os_family == "RedHat"
+
+- name: Créer le dossier runtime de php-fpm sur Rocky Linux
+  file:
+    path: /run/php-fpm
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_os_family == "RedHat"
+
+- name: Démarrer php-fpm sur Rocky Linux
+  command: /usr/sbin/php-fpm
+  when: ansible_os_family == "RedHat" and php_fpm_running.rc != 0

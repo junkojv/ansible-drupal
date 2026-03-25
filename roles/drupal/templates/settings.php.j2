@@ -1,0 +1,23 @@
+<?php
+
+$databases['default']['default'] = [
+  'database' => '{{ drupal_db_name }}',
+  'username' => '{{ drupal_db_user }}',
+  'password' => '{{ drupal_db_password }}',
+  'prefix' => '',
+  'host' => '{{ drupal_db_host }}',
+  'port' => '',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+];
+
+$settings['hash_salt'] = 'junkojv-drupal-salt';
+
+$settings['config_sync_directory'] = '{{ drupal_install_dir }}/sites/default/files/config_sync';
+
+$settings['update_free_access'] = FALSE;
+
+$settings['trusted_host_patterns'] = [
+  '^localhost$',
+  '^127\\.0\\.0\\.1$',
+];

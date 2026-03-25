@@ -63,7 +63,7 @@ ansible-galaxy collection install junkojv.drupal
 
 | Variable             | Valeur par defaut      | Description            |
 | -------------------- | ---------------------- | ---------------------- |
-| `drupal_version`     | `10.2.0`               | version de Drupal      |
+| `drupal_version`     | `9.5.11`               | version de Drupal      |
 | `drupal_install_dir` | `/var/www/html/drupal` | dossier d'installation |
 
 ## Test

@@ -1,6 +1,7 @@
 <VirtualHost *:80>
     ServerName localhost
     DocumentRoot {{ drupal_install_dir }}
+    DirectoryIndex index.php index.html
 
     <Directory {{ drupal_install_dir }}>
         AllowOverride All
